@@ -13,13 +13,13 @@ export class UserRepositoy implements IUserRepository {
         return this.prisma.user.findMany();
     }
 
-    async findUser(email: string): Promise<UserEntity> {
-        if (!email) {
-            throw new Error('Email must be provided');
+    async findUser(username: string): Promise<UserEntity> {
+        if (!username) {
+            throw new Error('username must be provided');
         }
         const user = await this.prisma.user.findUnique({
             where: {
-                email: email
+                username: username
             }
         });
         if(!user) {
@@ -32,7 +32,7 @@ export class UserRepositoy implements IUserRepository {
         return this.prisma.user.create({
             data: {
                 name: user.name,
-                email: user.email,
+                username: user.username,
                 password: user.password
             },
         });

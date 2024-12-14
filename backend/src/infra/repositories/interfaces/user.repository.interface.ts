@@ -4,5 +4,5 @@ import { UserEntity } from "src/Entities/user.entity";
 export interface IUserRepository {
     findAll(): Promise<UserEntity[]>;
     create(user: UserDto): Promise<UserEntity>;
-    findUser(email: string): Promise<UserEntity>;
+    findUser(username: string): Promise<UserEntity>;
 }

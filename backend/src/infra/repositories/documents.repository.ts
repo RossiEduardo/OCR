@@ -9,10 +9,10 @@ import { DocumentsEntity } from "src/Entities/documents.entity";
 export class DocumentsRepository implements IDocumentRepository {
     constructor(private readonly prisma: PrismaService) {}
 
-    async getUserDocuments(userEmail: string): Promise<DocumentsDto[]>{
+    async getUserDocuments(userusername: string): Promise<DocumentsDto[]>{
         const docs = await this.prisma.documents.findMany({
             where: {
-                user: { email: userEmail }
+                user: { username: userusername }
             }
         });
         return docs.map(doc => new DocumentsDto(doc));
@@ -25,8 +25,13 @@ export class DocumentsRepository implements IDocumentRepository {
     async saveDocument(document: DocumentsDto): Promise<DocumentsDto> {
         try {
             const existingDocument = await this.prisma.documents.findUnique({
-                where: { filename: document.filename },
+                where: { 
+                    filename: document.filename,
+                    user_id: document.user_id
+                },
             });
+            console.log(existingDocument);
+            console.log(document);
 
             if (existingDocument) {
                 throw new Error('Document already exists');

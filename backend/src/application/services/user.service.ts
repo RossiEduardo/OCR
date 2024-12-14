@@ -14,8 +14,8 @@ export class UserService {
         return this.userRepository.findAll();
     }
 
-    findUser(email: string): Promise<UserEntity> {
-        return this.userRepository.findUser(email);
+    findUser(username: string): Promise<UserEntity> {
+        return this.userRepository.findUser(username);
     }
 
     createUser(user: UserDto): Promise<UserEntity> {

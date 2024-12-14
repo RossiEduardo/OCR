@@ -10,9 +10,9 @@ export class DocumentsService{
         private readonly documentRepository: IDocumentRepository
     ){}
 
-    async getUserDocuments(userEmail: string): Promise<DocumentsDto[]>{
+    async getUserDocuments(userusername: string): Promise<DocumentsDto[]>{
         try {
-            const documents = await this.documentRepository.getUserDocuments(userEmail);
+            const documents = await this.documentRepository.getUserDocuments(userusername);
             return documents;
         } catch (error) {
             throw new Error(`Failed to get user documents: ${error.message}`);
