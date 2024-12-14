@@ -16,7 +16,7 @@ export class DocumentsController{
     ) {}
     
     @Get('user-documents')
-    async getUserDocuments(@Query('userusername') username: string): Promise<{ success: boolean; data: DocumentsDto[] }> {
+    async getUserDocuments(@Query('username') username: string): Promise<{ success: boolean; data: DocumentsDto[] }> {
         if (!username) {
             throw new HttpException(
               { status: HttpStatus.BAD_REQUEST, error: 'username must be provided' },
@@ -38,8 +38,18 @@ export class DocumentsController{
     }
     
     @Get('extracted-text')
-    async getExtractedText(@Query('documentId') documentId: string): Promise<string> {
-        return await this.documentsService.getExtractedText(documentId);
+    async getExtractedText(@Query('filename') filename: string): Promise<{filename: string, content: string}> {
+        if (!filename) {
+            throw new HttpException(
+              { status: HttpStatus.BAD_REQUEST, error: 'filename must be provided' },
+              HttpStatus.BAD_REQUEST,
+            );
+        }
+        let result = {
+            filename: filename,
+            content: await this.documentsService.getExtractedText(filename),
+        }
+        return result;
     }
 
     @Post('upload')
@@ -59,14 +69,17 @@ export class DocumentsController{
             //Upload no servidor
             const filePath = await this.uploadService.uploadFile(file);
 
+            const fileContent = await this.documentsService.getFileContent(filePath);
 
             //salvar no banco de dados
             await this.documentsService.saveDocument({
                 filename: file.originalname,
                 filepath: filePath,
-                user_id: user.id
+                user_id: user.id,
+                content: fileContent
             });
-            return { message: 'Documento salvo com sucesso' };
+
+            return { message: 'Documento salvo com sucesso', content: fileContent };
         }
         catch (error) {
             if (error.message === 'existingDocument') {

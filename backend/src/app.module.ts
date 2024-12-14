@@ -5,9 +5,10 @@ import { UserModule } from './infra/modules/user.module';
 import { AuthModule } from './auth/auth.module';
 import { UploadModule } from './infra/modules/upload.module';
 import { DocumentsModule } from './infra/modules/documents.module';
+import { OpenaiModule } from './openai/openai.module';
 
 @Module({
-  imports: [UserModule, AuthModule, UploadModule, DocumentsModule],
+  imports: [UserModule, AuthModule, UploadModule, DocumentsModule, OpenaiModule],
   controllers: [AppController],
   providers: [AppService],
 })

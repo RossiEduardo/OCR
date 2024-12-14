@@ -6,4 +6,5 @@ export class DocumentsEntity {
     filepath: string;
     user: UserEntity;
     user_id: string;
+    content: string;
 }  

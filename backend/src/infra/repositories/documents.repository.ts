@@ -18,8 +18,21 @@ export class DocumentsRepository implements IDocumentRepository {
         return docs.map(doc => new DocumentsDto(doc));
     }
     
-    getExtractedText(documentId: string): Promise<string>{
-        throw new Error("Method not implemented.");
+    async getExtractedText(filename: string): Promise<string>{
+        try{
+            const message = await this.prisma.documents.findUnique({
+                where: {
+                    filename: filename
+                },
+                select: {
+                    content: true
+                }
+            });
+            return message.content;
+        }
+        catch(error){
+            throw new Error(error.message);
+        }
     }
 
     async saveDocument(document: DocumentsDto): Promise<DocumentsDto> {
@@ -41,7 +54,8 @@ export class DocumentsRepository implements IDocumentRepository {
                 data: {
                     filename: document.filename,
                     filepath: document.filepath,
-                    user_id: document.user_id
+                    user_id: document.user_id,
+                    content: document.content,
                 }
             });
             return newDocument;
