@@ -1,14 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import OpenAI from "openai";
+import { LLMComentsRepository } from 'src/infra/repositories/LLMComents.repository';
 
 
 @Injectable()
 export class LLMComentsService {
+    constructor(
+        @Inject('LLMCOMENTS_REPOSITORY')
+        private readonly llmComentsRepository: LLMComentsRepository
+    ){}
+
     private readonly openai = new OpenAI({apiKey: process.env.OPEN_AI_SECRET_KEY});
         
     // Função para gerar explicações sobre o texto
-    async generateExplanation(text: string): Promise<string> {
+    async generateExplanation(documentId: string, text: string): Promise<string> {
         try {
             const stream = await this.openai.chat.completions.create({
                 model: "gpt-3.5-turbo",
@@ -19,11 +25,20 @@ export class LLMComentsService {
             for await (const chunk of stream) {
                 content += (chunk.choices[0]?.delta?.content || "");
             }
+
+            //salva o comentario no banco
+            await this.llmComentsRepository.createLLMComents({text: content, document_id: documentId});
+
             return content;
         } catch (error) {
             console.error('Erro ao gerar explicação:', error);
             throw new Error('Falha ao interagir com o modelo de linguagem');
         }
+    }
+
+    // Função para retornar todos os comentários de um documento
+    async getLLMComentsByFilename(filename: string): Promise<any[]> {
+        return await this.llmComentsRepository.getLLMComentsByFilename(filename);
     }
 
     // // Função para responder a uma pergunta sobre o documento

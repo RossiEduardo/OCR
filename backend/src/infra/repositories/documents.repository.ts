@@ -63,4 +63,34 @@ export class DocumentsRepository implements IDocumentRepository {
             throw new Error(error.message);
         }
     }
+
+    async getDocumentById(documentId: string): Promise<DocumentsEntity> {
+        try {
+            return await this.prisma.documents.findUnique({
+                where: {
+                    id: documentId,
+                },
+                include: {
+                    user: true
+                }
+            });
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    async getDocumentByFilename(filename: string): Promise<DocumentsEntity> {
+        try {
+            return await this.prisma.documents.findUnique({
+                where: {
+                    filename: filename,
+                },
+                include: {
+                    user: true
+                }
+            });
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
 }

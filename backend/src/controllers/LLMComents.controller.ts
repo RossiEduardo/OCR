@@ -10,7 +10,7 @@ export class LLMComentsController {
     ) {}
     
     @Get('generate-explanation')
-    async generateExplanation(@Query('filename') filename: string): Promise<{content: string}> {
+    async generateExplanation(@Query('filename') filename: string): Promise<{filename: string, content: string}> {
         if (!filename) {
             throw new HttpException(
                 { status: HttpStatus.BAD_REQUEST, error: 'filename must be provided' },
@@ -18,9 +18,23 @@ export class LLMComentsController {
             );
         }
         let text = await this.documentsService.getExtractedText(filename);
-        let content = await this.llmComentsService.generateExplanation(text);
 
-        return {content: content};
+        const document = await this.documentsService.getDocumentByFilename(filename);
+
+        let content = await this.llmComentsService.generateExplanation(document.id, text);
+
+        return {filename: filename, content: content};
+    }
+
+    @Get('get-all-comments')
+    async getAllComments(@Query('filename') filename: string): Promise<any[]> {
+        if (!filename) {
+            throw new HttpException(
+                { status: HttpStatus.BAD_REQUEST, error: 'filename must be provided' },
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+        return await this.llmComentsService.getLLMComentsByFilename(filename);
     }
 
 

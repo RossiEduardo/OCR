@@ -48,6 +48,22 @@ export class DocumentsService{
         }
     }
 
+    async getDocumentById(documentId: string): Promise<DocumentsEntity>{
+        try {
+            return await this.documentRepository.getDocumentById(documentId);
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    async getDocumentByFilename(filename: string): Promise<DocumentsEntity>{
+        try {
+            return await this.documentRepository.getDocumentByFilename(filename);
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
     
 
 }

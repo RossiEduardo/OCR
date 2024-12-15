@@ -5,4 +5,6 @@ export interface IDocumentRepository {
     getUserDocuments(userId: string): Promise<DocumentsDto[]>;
     getExtractedText(documentId: string): Promise<string>;
     saveDocument(document: DocumentsDto): Promise<DocumentsDto>;
+    getDocumentById(documentId: string): Promise<DocumentsEntity>;
+    getDocumentByFilename(filename: string): Promise<DocumentsEntity>;
 }
