@@ -9,11 +9,11 @@ export class UserRepositoy implements IUserRepository {
     
     constructor(private readonly prisma: PrismaService) {}
 
-    findAll(): Promise<UserEntity[]> {
+    getAllUsers(): Promise<UserEntity[]> {
         return this.prisma.user.findMany();
     }
 
-    async findUser(username: string): Promise<UserEntity> {
+    async getUserByUsername(username: string): Promise<UserEntity> {
         if (!username) {
             throw new Error('username must be provided');
         }

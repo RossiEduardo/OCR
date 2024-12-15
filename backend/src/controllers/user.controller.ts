@@ -10,8 +10,8 @@ export class UserController {
     
     @UseGuards(AuthGuard)
     @Get('/getUsers')
-    findAll(){
-        return this.userService.findAll();
+    getAllUsers(){
+        return this.userService.getAllUsers();
     }
 
     @Post('/create')

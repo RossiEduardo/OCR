@@ -2,7 +2,7 @@ import { Controller, Post, Get, HttpException, HttpStatus, Query } from '@nestjs
 import { LLMComentsService } from '@services/LLMComents.service';
 import { DocumentsService } from '@services/documents.service';
 
-@Controller('openai')
+@Controller('llm-coments')
 export class LLMComentsController {
     constructor(
         private readonly llmComentsService: LLMComentsService,
@@ -26,7 +26,7 @@ export class LLMComentsController {
         return {filename: filename, content: content};
     }
 
-    @Get('get-all-comments')
+    @Get('get-all-comments-by-filename')
     async getAllComments(@Query('filename') filename: string): Promise<any[]> {
         if (!filename) {
             throw new HttpException(

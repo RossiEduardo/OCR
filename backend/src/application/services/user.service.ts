@@ -10,12 +10,12 @@ export class UserService {
         private readonly userRepository: IUserRepository,
     ){}
 
-    findAll(): Promise<UserEntity[]> {
-        return this.userRepository.findAll();
+    getAllUsers(): Promise<UserEntity[]> {
+        return this.userRepository.getAllUsers();
     }
 
-    findUser(username: string): Promise<UserEntity> {
-        return this.userRepository.findUser(username);
+    getUserByUsername(username: string): Promise<UserEntity> {
+        return this.userRepository.getUserByUsername(username);
     }
 
     createUser(user: UserDto): Promise<UserEntity> {

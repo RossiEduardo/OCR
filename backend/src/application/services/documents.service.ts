@@ -28,7 +28,7 @@ export class DocumentsService{
             const data = await pdf(dataBuffer);
             return data.text;
         } catch (error) {
-            throw new Error('Erro ao extrair texto do PDF: ' + error.message);
+            throw new Error('Error extracting text from PDF: ' + error.message);
         }
     }
 

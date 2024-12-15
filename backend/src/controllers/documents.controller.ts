@@ -62,7 +62,7 @@ export class DocumentsController{
             );
         }
         try{
-            const user = await this.userService.findUser(body.username);
+            const user = await this.userService.getUserByUsername(body.username);
 
             // Deixando o filename único
             file.originalname = user.username + '_' + file.originalname;

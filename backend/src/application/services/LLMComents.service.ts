@@ -13,7 +13,7 @@ export class LLMComentsService {
 
     private readonly openai = new OpenAI({apiKey: process.env.OPEN_AI_SECRET_KEY});
         
-    // Função para gerar explicações sobre o texto
+    // Function to generate comments on the text using LLM
     async generateExplanation(documentId: string, text: string): Promise<string> {
         try {
             const stream = await this.openai.chat.completions.create({
@@ -26,7 +26,7 @@ export class LLMComentsService {
                 content += (chunk.choices[0]?.delta?.content || "");
             }
 
-            //salva o comentario no banco
+            //save the comment in the database
             await this.llmComentsRepository.createLLMComents({text: content, document_id: documentId});
 
             return content;
@@ -36,7 +36,6 @@ export class LLMComentsService {
         }
     }
 
-    // Função para retornar todos os comentários de um documento
     async getLLMComentsByFilename(filename: string): Promise<any[]> {
         return await this.llmComentsRepository.getLLMComentsByFilename(filename);
     }
