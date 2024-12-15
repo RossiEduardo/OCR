@@ -6,7 +6,7 @@ import { UploadService } from "@services/upload.service";
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from "@services/user.service";
 
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard) // Need to be authenticated to access these routes
 @Controller('documents')
 export class DocumentsController{
     constructor(
