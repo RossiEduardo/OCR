@@ -18,6 +18,10 @@ export class UserService {
         return this.userRepository.getUserByUsername(username);
     }
 
+    getUserById(id: string): Promise<UserEntity> {
+        return this.userRepository.getUserById(id);
+    }
+
     createUser(user: UserDto): Promise<UserEntity> {
         return this.userRepository.create(user);
     }

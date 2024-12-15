@@ -37,4 +37,19 @@ export class UserRepositoy implements IUserRepository {
             },
         });
     }
+
+    async getUserById(id: string): Promise<UserEntity> {
+        if (!id) {
+            throw new Error('id must be provided');
+        }
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: id
+            }
+        });
+        if(!user) {
+            throw new Error('User not found');
+        }
+        return user;
+    }
 }

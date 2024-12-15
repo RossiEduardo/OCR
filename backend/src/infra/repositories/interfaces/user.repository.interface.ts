@@ -5,4 +5,5 @@ export interface IUserRepository {
     getAllUsers(): Promise<UserEntity[]>;
     create(user: UserDto): Promise<UserEntity>;
     getUserByUsername(username: string): Promise<UserEntity>;
+    getUserById(id: string): Promise<UserEntity>;
 }
