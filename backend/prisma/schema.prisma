@@ -30,10 +30,10 @@ model Documents {
   user_id    String
   content    String
 
-  Coments Coments[]
+  LLMComents LLMComents[]
 }
 
-model Coments {
+model LLMComents {
   id          String @id @default(uuid())
   text        String
   document    Documents @relation(fields: [document_id], references: [id])
