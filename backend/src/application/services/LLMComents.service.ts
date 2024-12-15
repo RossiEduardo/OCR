@@ -4,7 +4,7 @@ import OpenAI from "openai";
 
 
 @Injectable()
-export class OpenaiService {
+export class LLMComentsService {
     private readonly openai = new OpenAI({apiKey: process.env.OPEN_AI_SECRET_KEY});
         
     // Função para gerar explicações sobre o texto

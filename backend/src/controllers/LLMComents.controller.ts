@@ -1,11 +1,11 @@
 import { Controller, Post, Get, HttpException, HttpStatus, Query } from '@nestjs/common';
-import { OpenaiService } from '../application/services/openai.service';
+import { LLMComentsService } from '@services/LLMComents.service';
 import { DocumentsService } from '@services/documents.service';
 
 @Controller('openai')
-export class OpenaiController {
+export class LLMComentsController {
     constructor(
-        private readonly openaiService: OpenaiService,
+        private readonly llmComentsService: LLMComentsService,
         private readonly documentsService: DocumentsService
     ) {}
     
@@ -18,7 +18,7 @@ export class OpenaiController {
             );
         }
         let text = await this.documentsService.getExtractedText(filename);
-        let content = await this.openaiService.generateExplanation(text);
+        let content = await this.llmComentsService.generateExplanation(text);
 
         return {content: content};
     }
