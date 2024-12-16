@@ -5,7 +5,7 @@ import { PrismaService } from "src/prisma.service";
 import { UserDto } from "src/dtos/user.dto";
 
 @Injectable()
-export class UserRepositoy implements IUserRepository {
+export class UserRepository implements IUserRepository {
     
     constructor(private readonly prisma: PrismaService) {}
 
@@ -14,18 +14,16 @@ export class UserRepositoy implements IUserRepository {
     }
 
     async getUserByUsername(username: string): Promise<UserEntity> {
-        if (!username) {
-            throw new Error('username must be provided');
+        try{
+            return await this.prisma.user.findUnique({
+                where: {
+                    username: username
+                }
+            });
         }
-        const user = await this.prisma.user.findUnique({
-            where: {
-                username: username
-            }
-        });
-        if(!user) {
-            throw new Error('User not found');
+        catch(error){
+            throw error;
         }
-        return user;
     }
 
     create(user: UserDto): Promise<UserEntity> {

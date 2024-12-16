@@ -23,12 +23,13 @@ model User {
 }
 
 model Documents {
-  id         String @id @default(uuid())
-  filename   String @unique
-  filepath   String
-  user       User @relation(fields: [user_id], references: [id])
-  user_id    String
-  content    String
+  id                String @id @default(uuid())
+  filename          String @unique
+  filepath          String
+  filepathDownload  String
+  user              User @relation(fields: [user_id], references: [id])
+  user_id           String
+  content           String
 
   LLMComents LLMComents[]
 }

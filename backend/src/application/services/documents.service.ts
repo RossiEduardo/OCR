@@ -13,11 +13,11 @@ export class DocumentsService{
     ){}
 
     async getUserDocuments(username: string): Promise<DocumentsDto[]>{
-        try {
-            const documents = await this.documentRepository.getUserDocuments(username);
-            return documents;
-        } catch (error) {
-            throw new Error(`Failed to get user documents: ${error.message}`);
+        try{
+            return await this.documentRepository.getUserDocuments(username);
+        }
+        catch(error){
+            throw error;
         }
     }
 

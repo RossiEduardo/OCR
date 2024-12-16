@@ -1,10 +1,10 @@
-import { Request, Get, Post, Query, Controller, UseGuards, UseInterceptors, UploadedFile, Body, HttpException, HttpStatus } from "@nestjs/common";
+import { Res, Get, Post, Query, Controller, UseGuards, UseInterceptors, UploadedFile, Body, HttpException, HttpStatus } from "@nestjs/common";
 import { AuthGuard } from "src/auth/auth.guard";
 import { DocumentsService } from "@services/documents.service";
 import { DocumentsDto } from "src/dtos/documents.dto";
 import { UploadService } from "@services/upload.service";
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UserService } from "@services/user.service";
+import { Response } from 'express';
 
 @UseGuards(AuthGuard) // Need to be authenticated to access these routes
 @Controller('documents')
@@ -12,29 +12,28 @@ export class DocumentsController{
     constructor(
         private readonly documentsService: DocumentsService,
         private readonly uploadService: UploadService,
-        private readonly userService: UserService
     ) {}
     
     @Get('user-documents')
-    async getUserDocuments(@Query('username') username: string): Promise<{ success: boolean; data: DocumentsDto[] }> {
+    async getUserDocuments(@Query('username') username: string, @Res() res: Response) {
         if (!username) {
             throw new HttpException(
               { status: HttpStatus.BAD_REQUEST, error: 'username must be provided' },
               HttpStatus.BAD_REQUEST,
             );
         }
-        let data = await this.documentsService.getUserDocuments(username);
-        if (data.length === 0) {
-            throw new HttpException(
-              { status: HttpStatus.NOT_FOUND, error: 'No documents found for the given user username' },
-              HttpStatus.NOT_FOUND,
-            );
+        try{
+            return res.status(200).json({
+                success: true,
+                data: await this.documentsService.getUserDocuments(username),
+            });
         }
-        let response = {
-            success: true,
-            data: await this.documentsService.getUserDocuments(username),
+        catch(error){
+            return res.status(500).json({
+                success: false,
+                error: error.message,
+            });
         }
-        return response;
     }
     
     @Get('extracted-text')
@@ -61,39 +60,6 @@ export class DocumentsController{
                 HttpStatus.BAD_REQUEST,
             );
         }
-        try{
-            const user = await this.userService.getUserByUsername(body.username);
-
-            // Deixando o filename único
-            file.originalname = user.username + '_' + file.originalname;
-            //Upload no servidor
-            const filePath = await this.uploadService.uploadFile(file);
-
-            const fileContent = await this.documentsService.getFileContent(filePath);
-
-            //salvar no banco de dados
-            await this.documentsService.saveDocument({
-                filename: file.originalname,
-                filepath: filePath,
-                user_id: user.id,
-                content: fileContent
-            });
-
-            return { message: 'Documento salvo com sucesso', content: fileContent };
-        }
-        catch (error) {
-            if (error.message === 'existingDocument') {
-              // Retorna erro 400
-              throw new HttpException(
-                { status: HttpStatus.BAD_REQUEST, error: 'This document has already been uploaded' },
-                HttpStatus.BAD_REQUEST,
-              );
-            }
-            // Outro erro (500 Internal Server Error)
-            throw new HttpException(
-              { status: HttpStatus.INTERNAL_SERVER_ERROR, error:`An error occurred while saving the document: ${error.message}` },
-              HttpStatus.INTERNAL_SERVER_ERROR,
-            );
-        }
+        return await this.uploadService.uploadFile(file, body.username);   
     }
 }

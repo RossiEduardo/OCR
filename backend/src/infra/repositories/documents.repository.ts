@@ -9,13 +9,18 @@ import { DocumentsEntity } from "src/Entities/documents.entity";
 export class DocumentsRepository implements IDocumentRepository {
     constructor(private readonly prisma: PrismaService) {}
 
-    async getUserDocuments(userusername: string): Promise<DocumentsDto[]>{
-        const docs = await this.prisma.documents.findMany({
-            where: {
-                user: { username: userusername }
-            }
-        });
-        return docs.map(doc => new DocumentsDto(doc));
+    async getUserDocuments(username: string): Promise<DocumentsDto[]>{
+        try{
+            const docs = await this.prisma.documents.findMany({
+                where: {
+                    user: { username: username }
+                }
+            });
+            return docs.map(doc => new DocumentsDto(doc));
+        }
+        catch(error){
+            throw new Error(error.message);
+        }
     }
     
     async getExtractedText(filename: string): Promise<string>{
@@ -54,6 +59,7 @@ export class DocumentsRepository implements IDocumentRepository {
                 data: {
                     filename: document.filename,
                     filepath: document.filepath,
+                    filepathDownload: document.filepathDownload,
                     user_id: document.user_id,
                     content: document.content,
                 }
