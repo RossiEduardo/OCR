@@ -21,9 +21,10 @@
     "paths": {
       "@/*": ["./*"],
       "@config": ["./config.ts"],
+      "@auth": ["./auth.js"],
 
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "auth.js"],
   "exclude": ["node_modules"]
 }

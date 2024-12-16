@@ -4,6 +4,7 @@ import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { Stack, TextField, Button, Link, Snackbar } from "@mui/material";
 import NextLink from "next/link";
 import { apiBaseUrl } from "@config";
+import { isTokenValid } from "@auth";
 import React from "react";
 import { useRouter } from "next/navigation";
 
@@ -14,14 +15,20 @@ export default function Login() {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const router = useRouter();
-    
-    // Block access if the user is already logged in
+    const [token, setToken] = useState("");
+      
     useEffect(() => {
-        const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("auth_token");
+
         if (token) {
-          router.push('/');
+            setToken(token);
+            const { isValid, payload } = isTokenValid(token);
+
+            if (isValid) {
+                router.push('/user-documents/all');
+            }
         }
-      }, [router]);
+    }, [router]);
     
     
     const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -52,8 +59,7 @@ export default function Login() {
             setSnackbarMessage("Login successful");
             setOpenSnackbar(true);
             localStorage.setItem("auth_token", data.access_token);
-
-            // Redirecionar ou realizar outras ações após o login bem-sucedido
+            router.push('/user-documents/all');
         } else {
             setSnackbarMessage("Login failed, verify your credentials");
             setOpenSnackbar(true);

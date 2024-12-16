@@ -2,6 +2,7 @@
 
 import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { Stack, TextField, Button, Snackbar, Link } from "@mui/material";
+import { isTokenValid } from "@auth";
 import { apiBaseUrl } from "@config";
 import NextLink from "next/link";
 import React from "react";
@@ -14,14 +15,21 @@ export default function Signup() {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const router = useRouter();
-    
-    // Block access if the user is already logged in
+    const [token, setToken] = useState("");
+  
+    // verifica o usuario logado
     useEffect(() => {
-        const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("auth_token");
+
         if (token) {
-          router.push('/');
+            setToken(token);
+            const { isValid, payload } = isTokenValid(token);
+
+            if (isValid) {
+                router.push('/user-documents/all');
+            }
         }
-      }, [router]);
+    }, [router]);
     
     const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);
@@ -48,17 +56,23 @@ export default function Signup() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({ username, name, password }),
-            credentials: "include",
         });
 
         if (response.ok) {
             const data = await response.json();
+            console.log(data);
+            if (!data.success) {
+                setSnackbarMessage(data.message || "please try again");
+                setOpenSnackbar(true);
+                return;
+            }
             setSnackbarMessage("Signup successful");
             setOpenSnackbar(true);
-
-            // Redirecionar ou realizar outras ações após o signup bem-sucedido
+            router.push('/user-documents/all');
         } else {
-            setSnackbarMessage("Signup failed, please try again");
+            const errorData = await response.json();
+            console.error(errorData);
+            setSnackbarMessage(`Signup failed: ${errorData.message || "please try again"}`);
             setOpenSnackbar(true);
         }
     };
