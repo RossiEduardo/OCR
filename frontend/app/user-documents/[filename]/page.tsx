@@ -20,6 +20,11 @@ interface DocumentComments {
     text: string;
 }
 
+interface ChatMessages {
+    role: string;
+    content: string;
+}
+
 export default function DocumentDetailsPage() {
     const [document, setDocument] = useState<DocumentDetails | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -31,8 +36,9 @@ export default function DocumentDetailsPage() {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [openChat, setOpenChat] = useState(false);
-    const [message, setMessage] = useState("");
-    const [chatResponse, setChatResponse] = useState<string[]>([]);	
+    const [userMessage, setUserMessage] = useState("");
+    const [chatResponse, setChatResponse] = useState<string[]>([]);	// AI
+    const [chatMessages, setChatMessages] = useState<ChatMessages[]>([]); // User e AI
     const [loadingSendMessage, setLoadingSendMessage] = useState<boolean>(false);
     const [openHistory, setOpenHistory] = useState(false);
     const [allComments, setAllComments] = useState<DocumentComments[]>([]);
@@ -93,7 +99,11 @@ export default function DocumentDetailsPage() {
     }, [filename]);
 
     const handleMessage = async () => {
-        const updatedMessages = [...chatResponse];
+        const updatedMessages = [...chatMessages, {role: "user", content: userMessage}];
+        // atualiza o chat com a mensagem do usuário
+        setChatMessages(updatedMessages);
+        setUserMessage("");
+
         const response = await fetch(`${apiBaseUrl}/llm/chat`, {
             method: "POST",
             headers: {
@@ -102,7 +112,7 @@ export default function DocumentDetailsPage() {
             },
             body: JSON.stringify({
                 document_id: document?.id,
-                question: message
+                question: userMessage
             })
         });
 
@@ -111,11 +121,10 @@ export default function DocumentDetailsPage() {
             setOpenSnackbar(true);
         }
 
+        // atualiza o chat com a resposta da AI
         const responseJson = await response.json();
         console.log(responseJson.chatResponse);
-        updatedMessages.push(responseJson.chatResponse);
-        setChatResponse(updatedMessages);
-        setMessage("");
+        setChatMessages([...updatedMessages, responseJson]);
     }
 
     const getChatHistory = async () => {
@@ -134,7 +143,6 @@ export default function DocumentDetailsPage() {
         }
 
         const responseJson = await response.json();
-        debugger;
         setAllComments(responseJson.data);
     }
 
@@ -173,14 +181,15 @@ export default function DocumentDetailsPage() {
     }
 
     if (openChat) {
+        console.log(chatMessages);
         return (
             <div className="h-screen flex flex-col items-center justify-center gap-10 container mx-auto">
                 <h3 className="topic">Chat with AI about {document.filename}</h3>
                 <div className="flex flex-col gap-3 h-[75%] overflow-auto w-full">
-                    {chatResponse.map((response, index) => (
-                        <div key={index} className="chat chat-response">
-                            <div className="chat-bubble">
-                                <p>{response}</p>
+                    {chatMessages.map((message, index) => (
+                        <div key={index} className={message.role === "user" ? "chat chat-end" : "chat chat-start"}>
+                            <div className={message.role === "user" ? "chat-bubble bg-blue-500" : "chat-bubble bg-gray-700"}>
+                                <p>{message.content}</p>
                             </div>
                         </div>
                     ))}
@@ -189,9 +198,9 @@ export default function DocumentDetailsPage() {
                     <input
                         className="input w-full m-10 border border-gray-400 p-2"
                         type="text"
-                        placeholder="Type your message here"
-                        value={message}
-                        onChange={(event) => setMessage(event.target.value)}
+                        placeholder="Type your userMessage here"
+                        value={userMessage}
+                        onChange={(event) => setUserMessage(event.target.value)}
                         onKeyDown={async (event) => {
                             if (event.key === "Enter") {
                                 setLoadingSendMessage(true);

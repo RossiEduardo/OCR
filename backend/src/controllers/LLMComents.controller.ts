@@ -31,23 +31,34 @@ export class LLMComentsController {
     // }
 
     @Post('chat')
-    async makeQuestion(@Body() body: LLMChatDto): Promise<{chatResponse: string}> {
+    async makeQuestion(@Body() body: LLMChatDto, @Res() res: Response){
         if (!body.document_id) {
             throw new HttpException(
                 { status: HttpStatus.BAD_REQUEST, error: 'id must be provided' },
                 HttpStatus.BAD_REQUEST,
             );
         }
-        console.log("body", body);
-        // get the content extracted from the document
-        let text = await this.documentsService.getExtractedText(body.document_id);
+        try{
+            // get the content extracted from the document
+            let text = await this.documentsService.getExtractedText(body.document_id);
 
-        const document = await this.documentsService.getDocumentById(body.document_id);
+            const document = await this.documentsService.getDocumentById(body.document_id);
 
-        // now llm make the comments
-        let content = await this.llmComentsService.makeQuestion(document.id, text, body.question);
-
-        return {chatResponse: content};
+            // now llm make the comments
+            let content = await this.llmComentsService.makeQuestion(document.id, text, body.question);
+            return res.status(200).json({
+                success: true,
+                role: "AI",
+                content: content
+            });
+            
+        }
+        catch(error){
+            return res.status(500).json({
+                success: false,
+                error: error.message,
+            });
+        }
     }
 
     @Get('get-chat-history')
