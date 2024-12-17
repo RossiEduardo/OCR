@@ -69,3 +69,5 @@ JWT_SECRET=your_jwt_secret
 ```
 Remember to replace placeholders like your_database_username, your_database_password, your_jwt_secret, and your_openai_api_key with actual secure values.
 
+**OBS** Logout no implemented yet.
+To log out it is necessary to delete cookies and site data
