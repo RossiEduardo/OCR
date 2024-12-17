@@ -27,6 +27,7 @@ export default function DocumentDetailsPage() {
     const router = useRouter();
     const params = useParams();
     const { filename } = params;
+    const [documentFilename, setDocumentFilename] = useState<string | null>(null);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [openChat, setOpenChat] = useState(false);
@@ -35,6 +36,7 @@ export default function DocumentDetailsPage() {
     const [loadingSendMessage, setLoadingSendMessage] = useState<boolean>(false);
 
     const fetchDocumentDetails = async (filename: any) => {
+        const docName = decodeURIComponent(filename);
         try {
             const token = localStorage.getItem("auth_token");
 
@@ -44,7 +46,7 @@ export default function DocumentDetailsPage() {
             }
 
             // Busca detalhes do documento a partir do nome do arquivo
-            const response = await fetch(`${apiBaseUrl}/documents/get?filename=${filename}`, {
+            const response = await fetch(`${apiBaseUrl}/documents/get?filename=${docName}`, {
                 method: "GET",
                 headers: {
                 Authorization: `Bearer ${token}`,
@@ -58,6 +60,7 @@ export default function DocumentDetailsPage() {
 
             const responseJson = await response.json();
             setDocument(responseJson.data);
+            debugger;
             } catch (err: any) {
                 setSnackbarMessage("Erro ao buscar detalhes do documento.");
                 setOpenSnackbar(true);
@@ -97,7 +100,7 @@ export default function DocumentDetailsPage() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                filename: filename,
+                document_id: document?.id,
                 question: message
             })
         });

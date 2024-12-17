@@ -18,14 +18,15 @@ export default function UserDocumentsPage() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [username, setUsername] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   // Função assíncrona para buscar documentos
-  const fetchDocuments = async (username: string, token: string) => {
+  const fetchDocuments = async (userId: string, token: string) => {
     try {
       const response = await fetch(
-        `${apiBaseUrl}/documents/user-documents?username=${username}`,
+        `${apiBaseUrl}/documents/user-documents?userId=${userId}`,
         {
           method: "GET",
           headers: {
@@ -34,6 +35,7 @@ export default function UserDocumentsPage() {
         }
       );
       const responseJson = await response.json();
+      debugger;
       setDocuments(responseJson.data);
     } catch (error: any) {
       console.error("Erro ao buscar documentos:", error.message);
@@ -59,16 +61,17 @@ export default function UserDocumentsPage() {
       }
 
       setUsername(payload.username);
+      setUserId(payload.userId);
     } else {
       router.push('/auth/login');
     }
   }, [router]);
 
   useEffect(() => {
-    if (username && token) {
-      fetchDocuments(username, token);
+    if (userId && token) {
+      fetchDocuments(userId, token);
     }
-  }, [username, token]);
+  }, [userId, token]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -81,7 +84,7 @@ export default function UserDocumentsPage() {
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('username', username!); // Como `username` já foi validado, podemos garantir que ele existe
+    formData.append('userId', userId!); // Como `userId` já foi validado, podemos garantir que ele existe
     console.log(formData);
 
     try {
@@ -111,8 +114,8 @@ export default function UserDocumentsPage() {
 
   // Após o upload de um documento, atualiza a lista de documentos
   const handleUploadSuccess = () => {
-    if (username && token) {
-      fetchDocuments(username, token); // Atualiza os documentos após o upload
+    if (userId && token) {
+      fetchDocuments(userId, token); // Atualiza os documentos após o upload
     }
   };
 
@@ -120,6 +123,15 @@ export default function UserDocumentsPage() {
   const handleDocumentClick = (documentFilename: string) => {
     router.push(`/user-documents/${documentFilename}`);
   };
+
+  if(loading){
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen font-[family-name:var(--font-geist-sans)] text-center">
+        <CircularProgress className="loading" style={{ display: "block" }} />
+        <p>Loading documents...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen font-[family-name:var(--font-geist-sans)] text-center">
