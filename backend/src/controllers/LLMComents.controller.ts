@@ -3,7 +3,9 @@ import { Response } from 'express';
 import { LLMComentsService } from '@services/LLMComents.service';
 import { DocumentsService } from '@services/documents.service';
 import { LLMChatDto } from 'src/dtos/LLMComents.dto';
+import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
 
+@UseGuards(AuthGuard) // Need to be authenticated to access these routes
 @Controller('llm')
 export class LLMComentsController {
     constructor(
