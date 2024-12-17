@@ -41,9 +41,8 @@ export default function UserDocumentsPage() {
       setSnackbarMessage(error.message || "Erro ao buscar documentos");
       setOpenSnackbar(true);
       router.push("/auth/login");
-    }{
-		setLoading(false);
-	}
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -71,11 +70,7 @@ export default function UserDocumentsPage() {
     }
   }, [username, token]);
 
-  // Função para lidar com o upload de arquivos
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-	setLoading(true);
-	console.log(loading);
-	debugger;
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -104,21 +99,26 @@ export default function UserDocumentsPage() {
         handleUploadSuccess(); // Chama a função de callback quando eh sucesso
       } else {
         setSnackbarMessage(responseJson.error);
-		setOpenSnackbar(true);
+        setOpenSnackbar(true);
       }
     } catch (error) {
       console.error('Error uploading document:', error);
       setSnackbarMessage('Erro ao enviar o documento.');
       setOpenSnackbar(true);
     }
-	setLoading(false);
+    setLoading(false);
   };
 
   // Após o upload de um documento, atualiza a lista de documentos
   const handleUploadSuccess = () => {
     if (username && token) {
-      fetchDocuments(username, token);
+      fetchDocuments(username, token); // Atualiza os documentos após o upload
     }
+  };
+
+  // Redirecionar para a página do documento
+  const handleDocumentClick = (documentFilename: string) => {
+    router.push(`/user-documents/${documentFilename}`);
   };
 
   return (
@@ -139,7 +139,16 @@ export default function UserDocumentsPage() {
             <ul>
               {documents.map((document, index) => (
                 <li key={index}>
-                  {document.filename} -{" "}
+                  <span 
+                    onClick={() => handleDocumentClick(document.filename)}
+                    style={{
+                      cursor: "pointer",
+                      color: "blue",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    {document.filename}
+                  </span>{" "}
                   <a href={document.filepathDownload} download>
                     Download <DownloadIcon />
                   </a>
