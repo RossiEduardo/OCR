@@ -11,11 +11,17 @@ This project aims to design and implement a system using **Next.js** and **Nest.
 - **Download:** Download processed files.
 
 ### Technologies required to run
-- Node.js: v22.12.0
+- Node.js and npm: Node v22.12.0, npm 10.9.0
 - Nest.jS: Backend framework for building modular and maintainable APIs.
 - Next.js: Frontend framework for server-side rendering and React-based development.
 - Docker: Containerization for running the PostgreSQL database.
 - OpenAI LLM: Integration with OpenAI's Large Language Models for advanced AI interactions.
+
+### Instalation
+ 1. **Clone** the repository using ```git clone git@github.com:RossiEduardo/OCR.git```
+ 2. **Install dependencies** Go to the ./backend directory and run the ```npm install``` command
+ 3. **Install dependencies** Go to the ./frontend directory and run the ```npm install``` command
+ 4. **Fill in the 2 .env files**
 
 ### Run
 To run the application, you will need to use three terminal:
@@ -41,7 +47,7 @@ OCR/frontend$ npm run dev
 
 
 ### Environment Variables
-The application requires two .env files for configuration:
+The application **requires** two .env files for configuration:
 
 1. Backend .env
 Place this file in the root directory of the **backend**.
