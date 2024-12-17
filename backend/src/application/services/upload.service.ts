@@ -18,9 +18,9 @@ export class UploadService {
     ){}
 
 
-    async uploadFile(file: Express.Multer.File, username: string): Promise<{ message: string, content: string }>{
+    async uploadFile(file: Express.Multer.File, userId: string): Promise<{ message: string, content: string }>{
         try{
-            const user = await this.userRepository.getUserByUsername(username);
+            const user = await this.userRepository.getUserById(userId);
 
             // makde sure the filename is unique
             file.originalname = user.username + '_' + file.originalname;

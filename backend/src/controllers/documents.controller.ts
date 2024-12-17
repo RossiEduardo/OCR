@@ -15,17 +15,17 @@ export class DocumentsController{
     ) {}
     
     @Get('user-documents')
-    async getUserDocuments(@Query('username') username: string, @Res() res: Response) {
-        if (!username) {
+    async getUserDocuments(@Query('userId') userId: string, @Res() res: Response) {
+        if (!userId) {
             throw new HttpException(
-              { status: HttpStatus.BAD_REQUEST, error: 'username must be provided' },
+              { status: HttpStatus.BAD_REQUEST, error: 'userId must be provided' },
               HttpStatus.BAD_REQUEST,
             );
         }
         try{
             return res.status(200).json({
                 success: true,
-                data: await this.documentsService.getUserDocuments(username),
+                data: await this.documentsService.getUserDocuments(userId),
             });
         }
         catch(error){
@@ -54,13 +54,13 @@ export class DocumentsController{
     @Post('upload')
       @UseInterceptors(FileInterceptor('file')) // Intercepta o arquivo enviado no campo "file"
       async uploadDocument(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
-        if(!file || !body.username){
+        if(!file || !body.userId){
             throw new HttpException(
-                { status: HttpStatus.BAD_REQUEST, error: 'File and username must be provided' },
+                { status: HttpStatus.BAD_REQUEST, error: 'File and userId must be provided' },
                 HttpStatus.BAD_REQUEST,
             );
         }
-        return await this.uploadService.uploadFile(file, body.username);   
+        return await this.uploadService.uploadFile(file, body.userId);   
     }
 
     @Get('get')

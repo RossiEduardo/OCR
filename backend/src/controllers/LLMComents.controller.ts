@@ -31,18 +31,17 @@ export class LLMComentsController {
 
     @Post('chat')
     async makeQuestion(@Body() body: LLMChatDto): Promise<{chatResponse: string}> {
-        if (!body.filename) {
+        if (!body.document_id) {
             throw new HttpException(
-                { status: HttpStatus.BAD_REQUEST, error: 'filename must be provided' },
+                { status: HttpStatus.BAD_REQUEST, error: 'id must be provided' },
                 HttpStatus.BAD_REQUEST,
             );
         }
-        console.log(body);
-        console.log(body.filename);
+        console.log("body", body);
         // get the content extracted from the document
-        let text = await this.documentsService.getExtractedText(body.filename);
+        let text = await this.documentsService.getExtractedText(body.document_id);
 
-        const document = await this.documentsService.getDocumentByFilename(body.filename);
+        const document = await this.documentsService.getDocumentById(body.document_id);
 
         // now llm make the comments
         let content = await this.llmComentsService.makeQuestion(document.id, text, body.question);

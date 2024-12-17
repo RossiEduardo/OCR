@@ -6,6 +6,6 @@ export class LLMComentsDto {
 }
 
 export class LLMChatDto{
-    filename: string;
+    document_id: string;
     question: string;
 }

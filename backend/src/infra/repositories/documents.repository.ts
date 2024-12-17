@@ -9,11 +9,11 @@ import { DocumentsEntity } from "src/Entities/documents.entity";
 export class DocumentsRepository implements IDocumentRepository {
     constructor(private readonly prisma: PrismaService) {}
 
-    async getUserDocuments(username: string): Promise<DocumentsDto[]>{
+    async getUserDocuments(userId: string): Promise<DocumentsDto[]>{
         try{
             const docs = await this.prisma.documents.findMany({
                 where: {
-                    user: { username: username }
+                    user: { id: userId }
                 }
             });
             return docs.map(doc => new DocumentsDto(doc));
@@ -23,11 +23,11 @@ export class DocumentsRepository implements IDocumentRepository {
         }
     }
     
-    async getExtractedText(filename: string): Promise<string>{
+    async getExtractedText(id: string): Promise<string>{
         try{
             const message = await this.prisma.documents.findUnique({
                 where: {
-                    filename: filename
+                    id: id
                 },
                 select: {
                     content: true

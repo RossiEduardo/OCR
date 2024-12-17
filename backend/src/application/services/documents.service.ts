@@ -12,9 +12,9 @@ export class DocumentsService{
         private readonly documentRepository: IDocumentRepository
     ){}
 
-    async getUserDocuments(username: string): Promise<DocumentsDto[]>{
+    async getUserDocuments(userId: string): Promise<DocumentsDto[]>{
         try{
-            return await this.documentRepository.getUserDocuments(username);
+            return await this.documentRepository.getUserDocuments(userId);
         }
         catch(error){
             throw error;
@@ -32,24 +32,16 @@ export class DocumentsService{
         }
     }
 
-    async getExtractedText(filename: string): Promise<string>{
-        console.log('filename', filename);
+    async getExtractedText(id: string): Promise<string>{
+        console.log('id', id);
         try {
-            return await this.documentRepository.getExtractedText(filename);
+            return await this.documentRepository.getExtractedText(id);
         } catch (error) {
             console.log(error);
             throw new Error(error.message);
         }
     }
     
-    async saveDocument(document: DocumentsDto): Promise<DocumentsDto>{
-        try {
-            return await this.documentRepository.saveDocument(document);
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
-
     async getDocumentById(documentId: string): Promise<DocumentsEntity>{
         try {
             return await this.documentRepository.getDocumentById(documentId);
