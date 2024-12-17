@@ -57,7 +57,7 @@ export default function Signup() {
             },
             body: JSON.stringify({ username, name, password }),
         });
-
+		debugger;
         if (response.ok) {
             const data = await response.json();
             if (!data.success) {
@@ -67,7 +67,8 @@ export default function Signup() {
             }
             setSnackbarMessage("Signup successful");
             setOpenSnackbar(true);
-            router.push('/user-documents/all');
+			localStorage.setItem("auth_token", data.access_token);
+			router.push('/user-documents/all');
         } else {
             const errorData = await response.json();
             console.error(errorData);
