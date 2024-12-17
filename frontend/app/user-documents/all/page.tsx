@@ -71,6 +71,7 @@ const fetchDocuments = async (userId: string, token: string) => {
   }, [userId, token]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLoading(true);
     const file = event.target.files?.[0];
     if (!file) return;
 
