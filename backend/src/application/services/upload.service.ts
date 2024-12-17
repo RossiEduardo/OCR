@@ -31,7 +31,6 @@ export class UploadService {
 
             const fileContent = await this.documentsService.getFileContent(filePath);
 
-            //salvar no banco de dados
             await this.documentsRepository.saveDocument({
                 filename: file.originalname,
                 filepathDownload: filePathDownload,
@@ -44,13 +43,11 @@ export class UploadService {
         }
         catch (error) {
             if (error.message === 'existingDocument') {
-                // Retorna erro 400
                 throw new HttpException(
                 { status: HttpStatus.BAD_REQUEST, error: 'This document has already been uploaded' },
                 HttpStatus.BAD_REQUEST,
                 );
             }
-            // Outro erro (500 Internal Server Error)
             throw new HttpException(
                 { status: HttpStatus.INTERNAL_SERVER_ERROR, error:`An error occurred while saving the document: ${error.message}` },
                 HttpStatus.INTERNAL_SERVER_ERROR,

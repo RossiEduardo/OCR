@@ -41,7 +41,7 @@ export class LLMComentsService {
         return await this.llmComentsRepository.getLLMComentsByDocumentId(documentId);
     }
 
-    // Função para responder a uma pergunta sobre o documento
+    // Function to answer a question about the document
     async makeQuestion(documentId: string, documentText: string, question: string): Promise<string> {
         try {
             const stream = await this.openai.chat.completions.create({

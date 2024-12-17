@@ -12,25 +12,6 @@ export class LLMComentsController {
         private readonly llmComentsService: LLMComentsService,
         private readonly documentsService: DocumentsService
     ) {}
-    
-    // @Get('generate-comments')
-    // async generateLLMComents(@Query('filename') filename: string): Promise<{filename: string, chatResponse: string}> {
-    //     if (!filename) {
-    //         throw new HttpException(
-    //             { status: HttpStatus.BAD_REQUEST, error: 'filename must be provided' },
-    //             HttpStatus.BAD_REQUEST,
-    //         );
-    //     }
-    //     // get the content extracted from the document
-    //     let text = await this.documentsService.getExtractedText(filename);
-
-    //     const document = await this.documentsService.getDocumentByFilename(filename);
-
-    //     // now llm make the comments
-    //     let content = await this.llmComentsService.generateLLMComents(document.id, text);
-
-    //     return {filename: filename, chatResponse: content};
-    // }
 
     @Post('chat')
     async makeQuestion(@Body() body: LLMChatDto, @Res() res: Response){
