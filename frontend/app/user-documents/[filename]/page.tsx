@@ -83,7 +83,6 @@ export default function DocumentDetailsPage() {
             const { isValid, payload } = isTokenValid(token);
 
             if (!isValid) {
-                console.log('Token inválido!');
                 router.push('/auth/login');
                 return;
             }
@@ -123,7 +122,6 @@ export default function DocumentDetailsPage() {
 
         // atualiza o chat com a resposta da AI
         const responseJson = await response.json();
-        console.log(responseJson.chatResponse);
         setChatMessages([...updatedMessages, responseJson]);
     }
 
@@ -181,7 +179,6 @@ export default function DocumentDetailsPage() {
     }
 
     if (openChat) {
-        console.log(chatMessages);
         return (
             <div className="h-screen flex flex-col items-center justify-center gap-10 container mx-auto">
                 <h3 className="topic">Chat with AI about {document.filename}</h3>

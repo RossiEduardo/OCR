@@ -60,7 +60,6 @@ export default function Signup() {
 
         if (response.ok) {
             const data = await response.json();
-            console.log(data);
             if (!data.success) {
                 setSnackbarMessage(data.message || "please try again");
                 setOpenSnackbar(true);

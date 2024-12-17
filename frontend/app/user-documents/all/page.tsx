@@ -54,7 +54,6 @@ export default function UserDocumentsPage() {
       const { isValid, payload } = isTokenValid(token);
 
       if (!isValid) {
-        console.log('Token inválido!');
         router.push('/auth/login');
         return;
       }
@@ -84,7 +83,6 @@ export default function UserDocumentsPage() {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('userId', userId!); // Como `userId` já foi validado, podemos garantir que ele existe
-    console.log(formData);
 
     try {
       const response = await fetch(`${apiBaseUrl}/documents/upload`, {
@@ -95,7 +93,6 @@ export default function UserDocumentsPage() {
         },
       });
       const responseJson = await response.json();
-      console.log(responseJson);
 
       if (response.ok) {
         handleUploadSuccess(); // Chama a função de callback quando eh sucesso

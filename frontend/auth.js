@@ -14,7 +14,6 @@ export function isTokenValid(token) {
     // Comparar a data de expiração com a data atual
     const currentTime = Math.floor(Date.now() / 1000); // Em segundos
     const isValid = currentTime < exp;
-    console.log(payload);
     return { isValid, payload };
   } catch (e) {
     console.error("Erro ao verificar o token:", e);
