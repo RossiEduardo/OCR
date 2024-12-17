@@ -32,13 +32,11 @@ export default function DocumentDetailsPage() {
     const router = useRouter();
     const params = useParams();
     const { filename } = params;
-    const [documentFilename, setDocumentFilename] = useState<string | null>(null);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [openChat, setOpenChat] = useState(false);
     const [userMessage, setUserMessage] = useState("");
-    const [chatResponse, setChatResponse] = useState<string[]>([]);	// AI
-    const [chatMessages, setChatMessages] = useState<ChatMessages[]>([]); // User e AI
+    const [chatMessages, setChatMessages] = useState<ChatMessages[]>([]); // User and AI
     const [loadingSendMessage, setLoadingSendMessage] = useState<boolean>(false);
     const [openHistory, setOpenHistory] = useState(false);
     const [allComments, setAllComments] = useState<DocumentComments[]>([]);
@@ -53,27 +51,27 @@ export default function DocumentDetailsPage() {
                 return;
             }
 
-            // Busca detalhes do documento a partir do nome do arquivo
+            // Fetch document details based on the filename
             const response = await fetch(`${apiBaseUrl}/documents/get?filename=${docName}`, {
                 method: "GET",
                 headers: {
-                Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
 
             if (!response.ok) {
-                setSnackbarMessage("Erro ao buscar detalhes do documento.");
+                setSnackbarMessage("Error fetching document details.");
                 setOpenSnackbar(true);
             }
 
             const responseJson = await response.json();
             setDocument(responseJson.data);
-            } catch (err: any) {
-                setSnackbarMessage("Erro ao buscar detalhes do documento.");
-                setOpenSnackbar(true);
-            } finally {
+        } catch (err: any) {
+            setSnackbarMessage("Error fetching document details.");
+            setOpenSnackbar(true);
+        } finally {
             setLoading(false);
-            }
+        }
     };
 
     useEffect(() => {
@@ -83,6 +81,7 @@ export default function DocumentDetailsPage() {
             const { isValid, payload } = isTokenValid(token);
 
             if (!isValid) {
+                localStorage.removeItem("auth_token");
                 router.push('/auth/login');
                 return;
             }
@@ -98,8 +97,8 @@ export default function DocumentDetailsPage() {
     }, [filename]);
 
     const handleMessage = async () => {
-        const updatedMessages = [...chatMessages, {role: "user", content: userMessage}];
-        // atualiza o chat com a mensagem do usuário
+        const updatedMessages = [...chatMessages, { role: "user", content: userMessage }];
+        // update the chat with the user's message
         setChatMessages(updatedMessages);
         setUserMessage("");
 
@@ -120,7 +119,7 @@ export default function DocumentDetailsPage() {
             setOpenSnackbar(true);
         }
 
-        // atualiza o chat com a resposta da AI
+        // update the chat with the AI's response
         const responseJson = await response.json();
         setChatMessages([...updatedMessages, responseJson]);
     }
@@ -136,7 +135,7 @@ export default function DocumentDetailsPage() {
         });
 
         if (!response.ok) {
-            setSnackbarMessage("Erro ao enviar mensagem.");
+            setSnackbarMessage("Error sending message.");
             setOpenSnackbar(true);
         }
 
@@ -146,18 +145,18 @@ export default function DocumentDetailsPage() {
 
     if (loading) {
         return (
-        <div className="flex flex-col items-center justify-center min-h-screen">
-            <CircularProgress />
-            <p>Loading document details...</p>
-        </div>
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <CircularProgress />
+                <p>Loading document details...</p>
+            </div>
         );
     }
 
     if (!document) {
         return (
-        <div className="flex flex-col items-center justify-center min-h-screen">
-            <p>Documento não encontrado.</p>
-        </div>
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <p>Document not found.</p>
+            </div>
         );
     }
 
@@ -214,23 +213,20 @@ export default function DocumentDetailsPage() {
 
     return (
         <React.Fragment>
-        {
-                    <div className="flex flex-col items-center justify-center min-h-screen">
-                        <div className="flex flex-col items-center justify-center">
-                            <h1 className="title">{document.filename}</h1>
-                            <div>
-                                <button className="btn-chat link" onClick={() => setOpenChat(true)}>Talk with AI about the text</button>
-                                <button className="btn-chat link" onClick={() => getChatHistory()}>Chat History</button>
-                                
-                            </div>
-                        </div>
-                        <h3 className="topic">Extracted Content</h3>
-                        <p>{document.content || "Sem descrição"}</p>
-                        <a href={document.filepathDownload} download>
-                            <button className="btn-download link">Download</button>
-                        </a>
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <div className="flex flex-col items-center justify-center">
+                    <h1 className="title">{document.filename}</h1>
+                    <div>
+                        <button className="btn-chat link" onClick={() => setOpenChat(true)}>Talk with AI about the text</button>
+                        <button className="btn-chat link" onClick={() => getChatHistory()}>Chat History</button>
                     </div>
-            }
+                </div>
+                <h3 className="topic">Extracted Content</h3>
+                <p>{document.content || "Sem descrição"}</p>
+                <a href={document.filepathDownload} download>
+                    <button className="btn-download link">Download</button>
+                </a>
+            </div>
             <Snackbar
                 open={openSnackbar}
                 message={snackbarMessage}

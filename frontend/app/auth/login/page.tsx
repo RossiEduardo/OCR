@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 
 export default function Login() {
     const [username, setUsername] = useState("");
-    const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -18,7 +17,7 @@ export default function Login() {
     const [token, setToken] = useState("");
       
     useEffect(() => {
-    const token = localStorage.getItem("auth_token");
+        const token = localStorage.getItem("auth_token");
 
         if (token) {
             setToken(token);
@@ -29,7 +28,6 @@ export default function Login() {
             }
         }
     }, [router]);
-    
     
     const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);

@@ -52,7 +52,7 @@ export class DocumentsController{
     }
 
     @Post('upload')
-    // Intercepts the file sent in the "file" field
+    @UseInterceptors(FileInterceptor('file'))// Intercepts the file sent in the "file" field
       async uploadDocument(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
         if(!file || !body.userId){
             throw new HttpException(

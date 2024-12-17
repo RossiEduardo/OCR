@@ -23,28 +23,26 @@ export default function UserDocumentsPage() {
   const [loading, setLoading] = useState<boolean>(true);
 
   // Função assíncrona para buscar documentos
-  const fetchDocuments = async (userId: string, token: string) => {
+const fetchDocuments = async (userId: string, token: string) => {
     try {
-      const response = await fetch(
-        `${apiBaseUrl}/documents/user-documents?userId=${userId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const responseJson = await response.json();
-      setDocuments(responseJson.data);
+        const response = await fetch(
+            `${apiBaseUrl}/documents/user-documents?userId=${userId}`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        const responseJson = await response.json();
+        setDocuments(responseJson.data);
     } catch (error: any) {
-      console.error("Erro ao buscar documentos:", error.message);
-      localStorage.removeItem("auth_token"); // Remover token inválido
-      setSnackbarMessage(error.message || "Erro ao buscar documentos");
-      setOpenSnackbar(true);
-      router.push("/auth/login");
+        console.error("Erro ao buscar documentos:", error.message);
+        setSnackbarMessage(error.message || "Error fetching documents");
+        setOpenSnackbar(true);
     }
     setLoading(false);
-  };
+};
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
@@ -55,6 +53,7 @@ export default function UserDocumentsPage() {
 
       if (!isValid) {
         router.push('/auth/login');
+        localStorage.removeItem("auth_token");
         return;
       }
 
@@ -76,13 +75,13 @@ export default function UserDocumentsPage() {
     if (!file) return;
 
     if (file.type !== 'application/pdf') {
-      alert('Por favor, envie um arquivo PDF.');
+        setSnackbarMessage('Please upload a PDF file.');
       return;
     }
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('userId', userId!); // Como `userId` já foi validado, podemos garantir que ele existe
+    formData.append('userId', userId!);
 
     try {
       const response = await fetch(`${apiBaseUrl}/documents/upload`, {
@@ -95,27 +94,26 @@ export default function UserDocumentsPage() {
       const responseJson = await response.json();
 
       if (response.ok) {
-        handleUploadSuccess(); // Chama a função de callback quando eh sucesso
+        handleUploadSuccess(); // Calls the callback function on success
       } else {
         setSnackbarMessage(responseJson.error);
         setOpenSnackbar(true);
       }
     } catch (error) {
-      console.error('Error uploading document:', error);
-      setSnackbarMessage('Erro ao enviar o documento.');
+      setSnackbarMessage('Error uploading document:');
       setOpenSnackbar(true);
     }
     setLoading(false);
   };
 
-  // Após o upload de um documento, atualiza a lista de documentos
+// After uploading a document, update the document list
   const handleUploadSuccess = () => {
     if (userId && token) {
-      fetchDocuments(userId, token); // Atualiza os documentos após o upload
+      fetchDocuments(userId, token);
     }
   };
 
-  // Redirecionar para a página do documento
+// Redirect to the document page
   const handleDocumentClick = (documentFilename: string) => {
     router.push(`/user-documents/${documentFilename}`);
   };

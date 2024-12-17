@@ -1,9 +1,9 @@
-import { Controller, Post, Get, HttpException, HttpStatus, Query, Body, Res } from '@nestjs/common';
+import { Controller, Post, Get, HttpException, HttpStatus, Query, Body, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { LLMComentsService } from '@services/LLMComents.service';
 import { DocumentsService } from '@services/documents.service';
 import { LLMChatDto } from 'src/dtos/LLMComents.dto';
-import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
+import { AuthGuard } from "src/auth/auth.guard";
 
 @UseGuards(AuthGuard) // Need to be authenticated to access these routes
 @Controller('llm')
@@ -67,7 +67,5 @@ export class LLMComentsController {
         }
     }
 }
-function UseGuards(AuthGuard: any): (target: typeof LLMComentsController) => void | typeof LLMComentsController {
-    throw new Error('Function not implemented.');
-}
+
 
