@@ -62,4 +62,26 @@ export class DocumentsController{
         }
         return await this.uploadService.uploadFile(file, body.username);   
     }
+
+    @Get('get')
+    async getDocumentById(@Query('filename') documentFilename: string, @Res() res: Response) {
+        if (!documentFilename) {
+            throw new HttpException(
+              { status: HttpStatus.BAD_REQUEST, error: 'document filename must be provided' },
+              HttpStatus.BAD_REQUEST,
+            );
+        }
+        try{
+            return res.status(200).json({
+                success: true,
+                data: await this.documentsService.getDocumentByFilename(documentFilename),
+            });
+        }
+        catch(error){
+            return res.status(500).json({
+                success: false,
+                error: error.message,
+            });
+        }
+    }
 }

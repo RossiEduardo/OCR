@@ -92,7 +92,8 @@ export class DocumentsRepository implements IDocumentRepository {
                     filename: filename,
                 },
                 include: {
-                    user: true
+                    user: true,
+                    LLMComents: true
                 }
             });
         } catch (error) {

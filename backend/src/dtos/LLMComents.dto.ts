@@ -4,3 +4,8 @@ export class LLMComentsDto {
     text: string;
     created_at?: Date;
 }
+
+export class LLMChatDto{
+    filename: string;
+    question: string;
+}

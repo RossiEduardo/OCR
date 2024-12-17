@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as express from 'express';
 import * as path from 'path';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +12,7 @@ async function bootstrap() {
     origin: process.env.FRONTEND_URL ?? 'http://localhost:3000',
   });
 
+  // app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.use('/uploads', express.static(uploadsPath));
 
   await app.listen(process.env.PORT ?? 3000, () => {console.log(`Server is running on http://localhost:${process.env.PORT ?? 3000}`, uploadsPath)});

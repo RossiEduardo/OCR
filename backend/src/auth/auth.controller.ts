@@ -29,9 +29,9 @@ export class AuthController {
    return await this.authService.signUp(signUpDto.username, signUpDto.name, signUpDto.password);
   }
 
-  @UseGuards(AuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
+  // @UseGuards(AuthGuard)
+  // @Get('profile')
+  // getProfile(@Request() req) {
+  //   return req.user;
+  // }
 }
