@@ -33,11 +33,9 @@ export class DocumentsService{
     }
 
     async getExtractedText(id: string): Promise<string>{
-        console.log('id', id);
         try {
             return await this.documentRepository.getExtractedText(id);
         } catch (error) {
-            console.log(error);
             throw new Error(error.message);
         }
     }

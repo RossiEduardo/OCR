@@ -48,9 +48,6 @@ export class DocumentsRepository implements IDocumentRepository {
                     user_id: document.user_id
                 },
             });
-            console.log(existingDocument);
-            console.log(document);
-
             if (existingDocument) {
                 throw new Error('Document already exists');
             }

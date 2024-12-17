@@ -84,3 +84,7 @@ export class LLMComentsController {
         }
     }
 }
+function UseGuards(AuthGuard: any): (target: typeof LLMComentsController) => void | typeof LLMComentsController {
+    throw new Error('Function not implemented.');
+}
+

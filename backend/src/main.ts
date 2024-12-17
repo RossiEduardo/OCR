@@ -15,6 +15,6 @@ async function bootstrap() {
   // app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.use('/uploads', express.static(uploadsPath));
 
-  await app.listen(process.env.PORT ?? 3000, () => {console.log(`Server is running on http://localhost:${process.env.PORT ?? 3000}`, uploadsPath)});
+  await app.listen(process.env.PORT ?? 3000, () => {console.log(`Server is running on http://localhost:${process.env.PORT ?? 3000}`)});
 }
 bootstrap();
