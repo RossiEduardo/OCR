@@ -28,11 +28,14 @@ export default function DocumentDetailsPage() {
     const params = useParams();
     const { filename } = params;
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState("");  
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [openChat, setOpenChat] = useState(false);
+    const [message, setMessage] = useState("");
+    const [chatResponse, setChatResponse] = useState<string[]>([]);	
+    const [loadingSendMessage, setLoadingSendMessage] = useState<boolean>(false);
 
     const fetchDocumentDetails = async (filename: any) => {
         try {
-            debugger;
             const token = localStorage.getItem("auth_token");
 
             if (!token) {
@@ -49,14 +52,15 @@ export default function DocumentDetailsPage() {
             });
 
             if (!response.ok) {
-                throw new Error("Erro ao buscar detalhes do documento.");
+                setSnackbarMessage("Erro ao buscar detalhes do documento.");
+                setOpenSnackbar(true);
             }
 
             const responseJson = await response.json();
-            debugger;
             setDocument(responseJson.data);
             } catch (err: any) {
-                
+                setSnackbarMessage("Erro ao buscar detalhes do documento.");
+                setOpenSnackbar(true);
             } finally {
             setLoading(false);
             }
@@ -84,6 +88,32 @@ export default function DocumentDetailsPage() {
         }
     }, [filename]);
 
+    const handleMessage = async () => {
+        const updatedMessages = [...chatResponse];
+        const response = await fetch(`${apiBaseUrl}/llm/chat`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                filename: filename,
+                question: message
+            })
+        });
+
+        if (!response.ok) {
+            setSnackbarMessage("Erro ao enviar mensagem.");
+            setOpenSnackbar(true);
+        }
+
+        const responseJson = await response.json();
+        console.log(responseJson.chatResponse);
+        updatedMessages.push(responseJson.chatResponse);
+        setChatResponse(updatedMessages);
+        setMessage("");
+    }
+
     if (loading) {
         return (
         <div className="flex flex-col items-center justify-center min-h-screen">
@@ -102,16 +132,52 @@ export default function DocumentDetailsPage() {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen">
-            <div className="flex flex-col items-center justify-center">
-                <h1 className="title">{document.filename}</h1>
-                    <button className="btn-chat link">Fale com nossa IA sobre o conteudo extraido</button>
-            </div>    
-            <h3 className="topic">Conteudo Extraido</h3>
-            <p>{document.content || "Sem descrição"}</p>
-            <a href={document.filepathDownload} download>
-                <button className="btn-download link">Download</button>
-            </a>
+        <React.Fragment>
+        {
+                openChat ? (
+                    <div className="h-screen flex flex-col items-center justify-center gap-10 container mx-auto">
+                        <div className="flex flex-col gap-3 h-[75%] overflow-scroll w-full">
+                            {chatResponse.map((response, index) => (
+                                <div key={index} className="chat chat-response">
+                                    <div className="chat-bubble">
+                                        <p>{response}</p> 
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex items-center gap-2 w-[60%]">
+                            <input
+                                className="input w-full m-10 border border-gray-300 p-2"
+                                type="text"
+                                placeholder="Type your message here"
+                                value={message}
+                                onChange={(event) => setMessage(event.target.value)}
+                                onKeyDown={async (event) => {
+                                    if(event.key === "Enter") {
+                                        setLoadingSendMessage(true);
+                                        await handleMessage();
+                                        setLoadingSendMessage(false);
+                                    }
+                                }}
+                            />
+                            {loadingSendMessage && <CircularProgress/>}
+                        </div>
+                    </div>
+                        ) : 
+                        (   
+                    <div className="flex flex-col items-center justify-center min-h-screen">
+                        <div className="flex flex-col items-center justify-center">
+                            <h1 className="title">{document.filename}</h1>
+                                <button className="btn-chat link" onClick={() => setOpenChat(true)}>Fale com nossa IA sobre o conteudo extraido</button>
+                        </div>
+                        <h3 className="topic">Conteudo Extraido</h3>
+                        <p>{document.content || "Sem descrição"}</p>
+                        <a href={document.filepathDownload} download>
+                            <button className="btn-download link">Download</button>
+                        </a>
+                    </div>
+                )
+            }
             <Snackbar
                 open={openSnackbar}
                 message={snackbarMessage}
@@ -124,6 +190,6 @@ export default function DocumentDetailsPage() {
                     left: "unset",
                 }}
             />
-        </div>
+        </React.Fragment>
     );
 }
