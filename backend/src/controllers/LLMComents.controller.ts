@@ -1,4 +1,5 @@
-import { Controller, Post, Get, HttpException, HttpStatus, Query, Body } from '@nestjs/common';
+import { Controller, Post, Get, HttpException, HttpStatus, Query, Body, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { LLMComentsService } from '@services/LLMComents.service';
 import { DocumentsService } from '@services/documents.service';
 import { LLMChatDto } from 'src/dtos/LLMComents.dto';
@@ -49,14 +50,26 @@ export class LLMComentsController {
         return {chatResponse: content};
     }
 
-    @Get('get-all-comments-by-filename')
-    async getAllComments(@Query('filename') filename: string): Promise<any[]> {
-        if (!filename) {
+    @Get('get-chat-history')
+    async getAllComments(@Query('documentId') documentId: string, @Res() res: Response) {
+        if (!documentId) {
             throw new HttpException(
-                { status: HttpStatus.BAD_REQUEST, error: 'filename must be provided' },
+                { status: HttpStatus.BAD_REQUEST, error: 'documentId must be provided' },
                 HttpStatus.BAD_REQUEST,
             );
         }
-        return await this.llmComentsService.getLLMComentsByFilename(filename);
+        try{
+            const data = await this.llmComentsService.getLLMComentsByDocumentId(documentId);
+            return res.status(200).json({
+                success: true,
+                data: data,
+            });
+        }
+        catch(error){
+            return res.status(500).json({
+                success: false,
+                error: error.message,
+            });
+        }
     }
 }

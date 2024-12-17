@@ -24,10 +24,10 @@ export class LLMComentsRepository implements ILLMComentsRepository{
         }
     }
 
-    async getLLMComentsByFilename(filename: string): Promise<any[]> {
+    async getLLMComentsByDocumentId(documentId: string): Promise<any[]> {
         const document = await this.prisma.documents.findUnique({
             where: {
-                filename: filename
+                id: documentId
             },
             select: {
                 id: true

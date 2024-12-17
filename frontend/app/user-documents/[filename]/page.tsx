@@ -17,7 +17,7 @@ interface DocumentDetails {
 
 interface DocumentComments {
     id: string;
-    comments: string;
+    text: string;
 }
 
 export default function DocumentDetailsPage() {
@@ -34,6 +34,8 @@ export default function DocumentDetailsPage() {
     const [message, setMessage] = useState("");
     const [chatResponse, setChatResponse] = useState<string[]>([]);	
     const [loadingSendMessage, setLoadingSendMessage] = useState<boolean>(false);
+    const [openHistory, setOpenHistory] = useState(false);
+    const [allComments, setAllComments] = useState<DocumentComments[]>([]);
 
     const fetchDocumentDetails = async (filename: any) => {
         const docName = decodeURIComponent(filename);
@@ -60,7 +62,6 @@ export default function DocumentDetailsPage() {
 
             const responseJson = await response.json();
             setDocument(responseJson.data);
-            debugger;
             } catch (err: any) {
                 setSnackbarMessage("Erro ao buscar detalhes do documento.");
                 setOpenSnackbar(true);
@@ -117,6 +118,26 @@ export default function DocumentDetailsPage() {
         setMessage("");
     }
 
+    const getChatHistory = async () => {
+        setOpenHistory(true);
+        const response = await fetch(`${apiBaseUrl}/llm/get-chat-history?documentId=${document?.id}`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            setSnackbarMessage("Erro ao enviar mensagem.");
+            setOpenSnackbar(true);
+        }
+
+        const responseJson = await response.json();
+        debugger;
+        setAllComments(responseJson.data);
+    }
+
     if (loading) {
         return (
         <div className="flex flex-col items-center justify-center min-h-screen">
@@ -134,52 +155,75 @@ export default function DocumentDetailsPage() {
         );
     }
 
+    if (openHistory) {
+        return (
+            <div className="h-screen flex flex-col items-center justify-center gap-10 container mx-auto">
+                <h3 className="topic">Chat History of {document.filename}</h3>
+                <div className="flex flex-col gap-3 h-[75%] overflow-scroll w-full scrollbar-hide">
+                    {allComments.map((comments, index) => (
+                        <div key={index} className="w-full">
+                            <div className="chat-bubble">
+                                <p>{comments.text}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (openChat) {
+        return (
+            <div className="h-screen flex flex-col items-center justify-center gap-10 container mx-auto">
+                <h3 className="topic">Chat with AI about {document.filename}</h3>
+                <div className="flex flex-col gap-3 h-[75%] overflow-auto w-full">
+                    {chatResponse.map((response, index) => (
+                        <div key={index} className="chat chat-response">
+                            <div className="chat-bubble">
+                                <p>{response}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="flex items-center gap-2 w-[60%]">
+                    <input
+                        className="input w-full m-10 border border-gray-400 p-2"
+                        type="text"
+                        placeholder="Type your message here"
+                        value={message}
+                        onChange={(event) => setMessage(event.target.value)}
+                        onKeyDown={async (event) => {
+                            if (event.key === "Enter") {
+                                setLoadingSendMessage(true);
+                                await handleMessage();
+                                setLoadingSendMessage(false);
+                            }
+                        }}
+                    />
+                    {loadingSendMessage && <CircularProgress />}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <React.Fragment>
         {
-                openChat ? (
-                    <div className="h-screen flex flex-col items-center justify-center gap-10 container mx-auto">
-                        <div className="flex flex-col gap-3 h-[75%] overflow-scroll w-full">
-                            {chatResponse.map((response, index) => (
-                                <div key={index} className="chat chat-response">
-                                    <div className="chat-bubble">
-                                        <p>{response}</p> 
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="flex items-center gap-2 w-[60%]">
-                            <input
-                                className="input w-full m-10 border border-gray-300 p-2"
-                                type="text"
-                                placeholder="Type your message here"
-                                value={message}
-                                onChange={(event) => setMessage(event.target.value)}
-                                onKeyDown={async (event) => {
-                                    if(event.key === "Enter") {
-                                        setLoadingSendMessage(true);
-                                        await handleMessage();
-                                        setLoadingSendMessage(false);
-                                    }
-                                }}
-                            />
-                            {loadingSendMessage && <CircularProgress/>}
-                        </div>
-                    </div>
-                        ) : 
-                        (   
                     <div className="flex flex-col items-center justify-center min-h-screen">
                         <div className="flex flex-col items-center justify-center">
                             <h1 className="title">{document.filename}</h1>
-                                <button className="btn-chat link" onClick={() => setOpenChat(true)}>Fale com nossa IA sobre o conteudo extraido</button>
+                            <div>
+                                <button className="btn-chat link" onClick={() => setOpenChat(true)}>Talk with AI about the text</button>
+                                <button className="btn-chat link" onClick={() => getChatHistory()}>Chat History</button>
+                                
+                            </div>
                         </div>
-                        <h3 className="topic">Conteudo Extraido</h3>
+                        <h3 className="topic">Extracted Content</h3>
                         <p>{document.content || "Sem descrição"}</p>
                         <a href={document.filepathDownload} download>
                             <button className="btn-download link">Download</button>
                         </a>
                     </div>
-                )
             }
             <Snackbar
                 open={openSnackbar}

@@ -37,8 +37,8 @@ export class LLMComentsService {
         }
     }
 
-    async getLLMComentsByFilename(filename: string): Promise<any[]> {
-        return await this.llmComentsRepository.getLLMComentsByFilename(filename);
+    async getLLMComentsByDocumentId(documentId: string): Promise<any[]> {
+        return await this.llmComentsRepository.getLLMComentsByDocumentId(documentId);
     }
 
     // Função para responder a uma pergunta sobre o documento

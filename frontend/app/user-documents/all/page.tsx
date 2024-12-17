@@ -35,7 +35,6 @@ export default function UserDocumentsPage() {
         }
       );
       const responseJson = await response.json();
-      debugger;
       setDocuments(responseJson.data);
     } catch (error: any) {
       console.error("Erro ao buscar documentos:", error.message);
