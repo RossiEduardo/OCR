@@ -47,7 +47,6 @@ export class LLMComentsService {
             const stream = await this.openai.chat.completions.create({
                 model: "gpt-3.5-turbo",
                 messages: [{ role: "user", content: `Baseado no seguinte texto, responda a pergunta:\n\nTexto: ${documentText}\nPergunta: ${question}` }],
-                max_tokens: 50,
                 stream: true,
             });
             let content = '';
